@@ -1,0 +1,10 @@
+services:
+  diagnoser:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      WORKERS: "4"      # worker pool size; 0 = NumCPU
+      QUEUE_SIZE: "100" # max queued jobs before the API returns 503
+    restart: unless-stopped

@@ -1,0 +1,22 @@
+# binaries
+/server
+*.exe
+*.out
+
+# build cache
+/bin/
+/dist/
+
+# Go
+*.test
+*.prof
+
+# env
+.env
+.env.*
+
+# editor / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
