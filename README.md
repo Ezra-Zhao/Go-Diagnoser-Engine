@@ -1,5 +1,10 @@
 # Go-Diagnoser-Engine
 
+**[English](README.md)** | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português](README.pt.md) | [Русский](README.ru.md)
+
+![Go 1.24](https://img.shields.io/badge/go-1.24-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green) ![Status: scaffold](https://img.shields.io/badge/status-scaffold-orange)
+
+
 **High-Concurrency Backend Diagnostics Engine** — a Go microservice that accepts
 diagnostic jobs over REST, executes probes concurrently on a bounded worker
 pool, and returns structured results.
