@@ -13,27 +13,34 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/ezra-zhao/go-diagnoser-engine/internal/api"
 	"github.com/ezra-zhao/go-diagnoser-engine/internal/engine"
+	"github.com/ezra-zhao/go-diagnoser-engine/internal/metrics"
 	"github.com/ezra-zhao/go-diagnoser-engine/internal/store"
 )
 
 func main() {
 	port := envOr("PORT", "8080")
-	workers := envIntOr("WORKERS", 0) // 0 -> engine defaults to NumCPU
+	workers := envIntOr("WORKERS", 0) // 0 -> default below
+	if workers <= 0 {
+		workers = runtime.NumCPU()
+	}
 	queueSize := envIntOr("QUEUE_SIZE", 100)
 
 	st := store.New()
 	eng := engine.New(st, engine.Config{Workers: workers, QueueSize: queueSize})
+	reg := metrics.New(eng.QueueDepth, workers)
+	eng.AttachMetrics(reg)
 	eng.Start()
 
 	srv := &http.Server{
 		Addr:         ":" + port,
-		Handler:      api.NewServer(eng, st),
+		Handler:      api.NewServer(eng, st, reg),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  60 * time.Second,

@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ezra-zhao/go-diagnoser-engine/internal/metrics"
 	"github.com/ezra-zhao/go-diagnoser-engine/internal/store"
 	"github.com/ezra-zhao/go-diagnoser-engine/pkg/models"
 )
@@ -32,6 +33,9 @@ type Engine struct {
 	ctx     context.Context
 	cancel  context.CancelFunc
 	wg      sync.WaitGroup
+	// metrics is optional; AttachMetrics wires it. Nil-safe: the engine
+	// runs fine without observability in tests.
+	metrics *metrics.Registry
 }
 
 // Config tunes the engine.
@@ -55,6 +59,18 @@ func New(st *store.Store, cfg Config) *Engine {
 		ctx:     ctx,
 		cancel:  cancel,
 	}
+}
+
+// AttachMetrics wires the observability registry. Call before Start;
+// safe to skip (engine is nil-safe without metrics).
+func (e *Engine) AttachMetrics(m *metrics.Registry) {
+	e.metrics = m
+}
+
+// QueueDepth reports jobs waiting for a worker; sampled by /metrics so
+// the gauge is never stale.
+func (e *Engine) QueueDepth() int {
+	return len(e.queue)
 }
 
 // Start launches the worker goroutines.
@@ -133,5 +149,12 @@ func (e *Engine) runJob(t task) {
 	}
 	wg.Wait()
 
+	// Record per-check telemetry before persisting.
+	if e.metrics != nil {
+		for _, r := range results {
+			e.metrics.ObserveCheck(r.Name, r.LatencyMs, r.Passed)
+		}
+		e.metrics.IncCompleted(true)
+	}
 	e.store.SetResults(t.jobID, results)
 }
