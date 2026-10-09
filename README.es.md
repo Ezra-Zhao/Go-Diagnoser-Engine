@@ -118,3 +118,6 @@ pkg/models/          shared domain types
 MIT — ver [LICENSE](LICENSE).
 
 Construido por Guangyi "Ezra" Zhao como proyecto de portafolio para búsqueda de empleo.
+
+---
+All code in this repository is clean-room code written by Guangyi Zhao for learning and research purposes. It does not contain any client or employer confidential information.

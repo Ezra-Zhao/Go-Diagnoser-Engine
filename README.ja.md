@@ -118,3 +118,6 @@ pkg/models/          shared domain types
 MIT —— [LICENSE](LICENSE) を参照。
 
 Guangyi "Ezra" Zhao による求職ポートフォリオプロジェクト。
+
+---
+All code in this repository is clean-room code written by Guangyi Zhao for learning and research purposes. It does not contain any client or employer confidential information.
